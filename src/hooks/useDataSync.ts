@@ -50,11 +50,27 @@ export function useDataSync() {
       const activityData = await apiClient.getData<Record<string, unknown>>(DATA_KEYS.ACTIVITY);
       if (activityData && Object.keys(activityData).length > 0) {
         console.log('[DataSync] Activity data received:', Object.keys(activityData));
-        console.log('[DataSync] customActivities in response:', activityData.customActivities);
-        // Replace data fields with backend data (keeping store functions intact)
-        useActivityStore.setState(activityData as Partial<ReturnType<typeof useActivityStore.getState>>);
+        console.log('[DataSync] customActivities in response:', JSON.stringify(activityData.customActivities));
+        
+        // Get current state to preserve localStorage data for missing keys
+        const currentState = useActivityStore.getState();
+        
+        // Merge backend data with current state, preferring backend data
+        const mergedData = {
+          ...activityData,
+          // Ensure customActivities is properly merged
+          customActivities: {
+            ...currentState.customActivities,
+            ...(activityData.customActivities as Record<string, unknown> || {}),
+          },
+        };
+        
+        console.log('[DataSync] Merged customActivities:', JSON.stringify(mergedData.customActivities));
+        
+        // Replace data fields with merged data (keeping store functions intact)
+        useActivityStore.setState(mergedData as Partial<ReturnType<typeof useActivityStore.getState>>);
         console.log('[DataSync] Loaded activity data from backend');
-        console.log('[DataSync] Store customActivities after setState:', useActivityStore.getState().customActivities);
+        console.log('[DataSync] Store customActivities after setState:', JSON.stringify(useActivityStore.getState().customActivities));
       } else {
         console.log('[DataSync] No activity data on backend - user has fresh state');
       }
