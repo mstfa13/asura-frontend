@@ -31,16 +31,24 @@ import { useState, useEffect } from "react";
 function CustomActivityRoute() {
   const { slug } = useParams();
   const entry = useActivityStore((s) => (slug ? s.customActivities[slug] : undefined));
-  const customActivities = useActivityStore((s) => s.customActivities);
   const [isWaiting, setIsWaiting] = useState(true);
 
-  // Wait a moment for data to load from backend on page refresh
+  // Stop waiting after timeout OR when entry is found
   useEffect(() => {
+    if (entry) {
+      setIsWaiting(false);
+      return;
+    }
     const timer = setTimeout(() => {
       setIsWaiting(false);
-    }, 1500); // Wait 1.5 seconds for data to load
+    }, 3000); // Wait up to 3 seconds for data to load
     return () => clearTimeout(timer);
-  }, []);
+  }, [entry]);
+
+  // Debug log
+  useEffect(() => {
+    console.log('[CustomActivityRoute] slug:', slug, 'entry:', entry, 'isWaiting:', isWaiting);
+  }, [slug, entry, isWaiting]);
 
   // If still waiting and no entry, show loading
   if (isWaiting && !entry) {
