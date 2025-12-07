@@ -111,7 +111,7 @@ export default function Progress() {
                     radar={{ metrics: categories, max: Math.max(10, ...hoursSeries) }}
                   />
                 ) : (
-                  <div className="h-full flex items-center justify-center text-sm text-gray-600">
+                  <div className="h-full flex items-center justify-center text-sm text-slate-400">
                     No data yet. Add hours on activity pages to see your radar.
                   </div>
                 )}
@@ -132,19 +132,19 @@ export default function Progress() {
                   const coreActivity = coreActivities.find(c => c.name === activity.name);
                   const isCore = !!coreActivity;
                   
-                  // Get styling based on activity type
+                  // Get styling based on activity type - dark mode compatible
                   const getActivityStyle = (name: string, isCore: boolean) => {
                     if (isCore) {
                       switch (name) {
-                        case 'Boxing': return { bg: 'bg-red-50', text: 'text-red-900', boldText: 'text-red-700', badge: 'bg-red-100 text-red-800' };
-                        case 'Gym': return { bg: 'bg-green-50', text: 'text-green-900', boldText: 'text-green-700', badge: 'bg-green-100 text-green-800' };
-                        case 'Oud': return { bg: 'bg-purple-50', text: 'text-purple-900', boldText: 'text-purple-700', badge: 'bg-purple-100 text-purple-800' };
-                        case 'Spanish': return { bg: 'bg-yellow-50', text: 'text-yellow-900', boldText: 'text-yellow-700', badge: 'bg-yellow-100 text-yellow-800' };
-                        case 'German': return { bg: 'bg-slate-50', text: 'text-slate-900', boldText: 'text-slate-700', badge: 'bg-slate-200 text-slate-800' };
-                        default: return { bg: 'bg-indigo-50', text: 'text-indigo-900', boldText: 'text-indigo-700', badge: 'bg-indigo-100 text-indigo-800' };
+                        case 'Boxing': return { bg: 'bg-red-500/20', text: 'text-red-300', boldText: 'text-red-400', badge: 'bg-red-500/30 text-red-300' };
+                        case 'Gym': return { bg: 'bg-green-500/20', text: 'text-green-300', boldText: 'text-green-400', badge: 'bg-green-500/30 text-green-300' };
+                        case 'Oud': return { bg: 'bg-purple-500/20', text: 'text-purple-300', boldText: 'text-purple-400', badge: 'bg-purple-500/30 text-purple-300' };
+                        case 'Spanish': return { bg: 'bg-yellow-500/20', text: 'text-yellow-300', boldText: 'text-yellow-400', badge: 'bg-yellow-500/30 text-yellow-300' };
+                        case 'German': return { bg: 'bg-slate-500/20', text: 'text-slate-300', boldText: 'text-slate-400', badge: 'bg-slate-500/30 text-slate-300' };
+                        default: return { bg: 'bg-indigo-500/20', text: 'text-indigo-300', boldText: 'text-indigo-400', badge: 'bg-indigo-500/30 text-indigo-300' };
                       }
                     }
-                    return { bg: 'bg-indigo-50', text: 'text-indigo-900', boldText: 'text-indigo-700', badge: 'bg-indigo-100 text-indigo-800' };
+                    return { bg: 'bg-indigo-500/20', text: 'text-indigo-300', boldText: 'text-indigo-400', badge: 'bg-indigo-500/30 text-indigo-300' };
                   };
 
                   const style = getActivityStyle(activity.name, isCore);
@@ -213,23 +213,23 @@ export default function Progress() {
               </CardHeader>
               <CardContent>
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-gray-900">
+                  <div className="text-4xl font-bold text-slate-200">
                     {allActivities.reduce((total, activity) => total + activity.hours, 0)}h
                   </div>
-                  <p className="text-gray-600 mt-2">Total hours across all activities</p>
+                  <p className="text-slate-400 mt-2">Total hours across all activities</p>
                   
                   <div className="mt-6 space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span>Most Active</span>
-                      <span className="font-medium">
+                      <span className="text-slate-400">Most Active</span>
+                      <span className="font-medium text-slate-200">
                         {allActivities.length > 0 
                           ? allActivities.reduce((a, b) => (b.hours > a.hours ? b : a)).name
                           : 'None'}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span>Average per Activity</span>
-                      <span className="font-medium">
+                      <span className="text-slate-400">Average per Activity</span>
+                      <span className="font-medium text-slate-200">
                         {allActivities.length > 0 
                           ? Math.round(allActivities.reduce((total, activity) => total + activity.hours, 0) / allActivities.length)
                           : 0}h
