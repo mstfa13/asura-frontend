@@ -20,11 +20,20 @@ export function useDataSync() {
     if (!isAuthenticated) return;
     
     // Don't save until we've loaded from backend first
-    if (!hasLoadedRef.current) return;
+    if (!hasLoadedRef.current) {
+      console.log(`[DataSync] Skipping save - not loaded yet`);
+      return;
+    }
     
     // Clear existing timeout
     if (syncTimeoutRef.current) {
       clearTimeout(syncTimeoutRef.current);
+    }
+    
+    // Log what we're about to save
+    const dataObj = data as Record<string, unknown>;
+    if (dataObj.customActivities) {
+      console.log(`[DataSync] Queuing save with customActivities:`, JSON.stringify(dataObj.customActivities));
     }
     
     // Debounce saves to avoid hammering the backend
