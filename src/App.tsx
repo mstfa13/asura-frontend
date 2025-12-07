@@ -26,9 +26,34 @@ import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import { useDataSync } from "./hooks/useDataSync";
 
+import { useState, useEffect } from "react";
+
 function CustomActivityRoute() {
   const { slug } = useParams();
   const entry = useActivityStore((s) => (slug ? s.customActivities[slug] : undefined));
+  const customActivities = useActivityStore((s) => s.customActivities);
+  const [isWaiting, setIsWaiting] = useState(true);
+
+  // Wait a moment for data to load from backend on page refresh
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsWaiting(false);
+    }, 1500); // Wait 1.5 seconds for data to load
+    return () => clearTimeout(timer);
+  }, []);
+
+  // If still waiting and no entry, show loading
+  if (isWaiting && !entry) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className="text-slate-400">Loading activity...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!slug || !entry) return <NotFound />;
   const template = entry.template || 'none';
   if (template === 'boxing') return <BoxingTemplatePage slug={slug} name={entry.name} />;
