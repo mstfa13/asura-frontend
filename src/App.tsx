@@ -23,6 +23,7 @@ import Debug from "./pages/Debug";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import LoginPage from "./pages/LoginPage";
+import AdminDashboard from "./pages/AdminDashboard";
 import { useDataSync } from "./hooks/useDataSync";
 
 function CustomActivityRoute() {
@@ -79,6 +80,9 @@ function AppContent() {
       <Route path="/login" element={
         isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />
       } />
+      
+      {/* Admin dashboard - separate from main app, no Layout */}
+      <Route path="/admin" element={<AdminDashboard />} />
       
       {/* Redirect root to dashboard */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
