@@ -616,59 +616,6 @@ export default function Gym() {
 														</div>
 							)}
 						</CardContent>
-
-						{/* Static grouped summary list inserted per user request */}
-						<div className="border-t px-6 pb-6 pt-4 bg-gradient-to-br from-gray-50 to-white">
-							<h4 className="text-sm font-semibold text-gray-700 mb-3">Session Summary (Manual Entry)</h4>
-							<div className="grid md:grid-cols-3 gap-6 text-xs leading-5">
-								{/* Push */}
-								<div>
-									<p className="font-medium text-blue-600 mb-1">Push</p>
-									<ul className="space-y-1 text-gray-700">
-										<li>Flat db press - 25x8r (2nd set 5r)</li>
-										<li>Flat B-Press machine - 50x9r</li>
-										<li>Incline db press - 25x8r</li>
-										<li>Incline B-Press machine - 55x10r</li>
-										<li>High to low cable fly - 25x9r</li>
-										<li>Tri rope pushdown - 45x9r</li>
-										<li>Overhead cable bar extensions - 40x9r</li>
-										<li>Db lateral raises - 10x10r</li>
-										<li>Cable lateral raises - 10x8r</li>
-										<li>Shoulder press machine - 25x8r</li>
-									</ul>
-								</div>
-								{/* Pull */}
-								<div>
-									<p className="font-medium text-green-600 mb-1">Pull</p>
-									<ul className="space-y-1 text-gray-700">
-										<li>Wide Lat pulldown - 54x10r</li>
-										<li>Narrow seated rows - 60x7r</li>
-										<li>Wide seated rows - 80x7r</li>
-										<li>Rope face pulls - 60x8r</li>
-										<li>SA Cable Rear Delt Fly - (no entry)</li>
-										<li>Bar Curls - 20x9r</li>
-										<li>Db Preacher curl - 10x7r</li>
-										<li>Behind back cable curls - 50x10r</li>
-										<li>Rope Bicep curl - 25x10r</li>
-										<li>Cable bar shrugs - 50x10r</li>
-									</ul>
-								</div>
-								{/* Leg */}
-								<div>
-									<p className="font-medium text-purple-600 mb-1">Leg</p>
-									<ul className="space-y-1 text-gray-700">
-										<li>Romanian Deadlift - (no entry)</li>
-										<li>Bar squat - 100x9r</li>
-										<li>Hack squat - 70x10r</li>
-										<li>Single Leg press - 40x10r</li>
-										<li>Leg extensions - 75x10r</li>
-										<li>Seated leg curls - 35x10r</li>
-										<li>Bar hip thrust - 35x12r</li>
-										<li>Seated Adduction machine - 100kgx10r</li>
-									</ul>
-								</div>
-							</div>
-						</div>
 					</Card>
 				</div>
 
