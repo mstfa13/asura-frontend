@@ -136,15 +136,15 @@ export default function Progress() {
                   const getActivityStyle = (name: string, isCore: boolean) => {
                     if (isCore) {
                       switch (name) {
-                        case 'Boxing': return { bg: 'bg-red-500/20', text: 'text-red-300', boldText: 'text-red-400', badge: 'bg-red-500/30 text-red-300' };
-                        case 'Gym': return { bg: 'bg-green-500/20', text: 'text-green-300', boldText: 'text-green-400', badge: 'bg-green-500/30 text-green-300' };
-                        case 'Oud': return { bg: 'bg-purple-500/20', text: 'text-purple-300', boldText: 'text-purple-400', badge: 'bg-purple-500/30 text-purple-300' };
-                        case 'Spanish': return { bg: 'bg-yellow-500/20', text: 'text-yellow-300', boldText: 'text-yellow-400', badge: 'bg-yellow-500/30 text-yellow-300' };
-                        case 'German': return { bg: 'bg-slate-500/20', text: 'text-slate-300', boldText: 'text-slate-400', badge: 'bg-slate-500/30 text-slate-300' };
-                        default: return { bg: 'bg-indigo-500/20', text: 'text-indigo-300', boldText: 'text-indigo-400', badge: 'bg-indigo-500/30 text-indigo-300' };
+                        case 'Boxing': return { bg: 'bg-red-500/40', text: 'text-red-200', boldText: 'text-red-300', badge: 'bg-red-500/50 text-red-100' };
+                        case 'Gym': return { bg: 'bg-green-500/40', text: 'text-green-200', boldText: 'text-green-300', badge: 'bg-green-500/50 text-green-100' };
+                        case 'Oud': return { bg: 'bg-purple-500/40', text: 'text-purple-200', boldText: 'text-purple-300', badge: 'bg-purple-500/50 text-purple-100' };
+                        case 'Spanish': return { bg: 'bg-yellow-500/40', text: 'text-yellow-200', boldText: 'text-yellow-300', badge: 'bg-yellow-500/50 text-yellow-100' };
+                        case 'German': return { bg: 'bg-slate-500/40', text: 'text-slate-200', boldText: 'text-slate-300', badge: 'bg-slate-500/50 text-slate-100' };
+                        default: return { bg: 'bg-indigo-500/40', text: 'text-indigo-200', boldText: 'text-indigo-300', badge: 'bg-indigo-500/50 text-indigo-100' };
                       }
                     }
-                    return { bg: 'bg-indigo-500/20', text: 'text-indigo-300', boldText: 'text-indigo-400', badge: 'bg-indigo-500/30 text-indigo-300' };
+                    return { bg: 'bg-indigo-500/40', text: 'text-indigo-200', boldText: 'text-indigo-300', badge: 'bg-indigo-500/50 text-indigo-100' };
                   };
 
                   const style = getActivityStyle(activity.name, isCore);

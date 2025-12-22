@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActivityStore } from '@/lib/activityStore';
-import { Dumbbell, Clock, Target, Flame } from 'lucide-react';
+import { Dumbbell, Clock, Target, Flame, Edit2 } from 'lucide-react';
 import Levels from '@/components/Levels';
 import { LineChart } from '@mui/x-charts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -35,9 +35,20 @@ export default function Gym() {
 	const addGymWeight = useActivityStore((s) => s.addGymWeight);
 		const updateGymWeightAt = useActivityStore((s) => s.updateGymWeightAt);
 		const deleteGymWeightAt = useActivityStore((s) => s.deleteGymWeightAt);
+		const setGymGoalWeight = useActivityStore((s) => s.setGymGoalWeight);
 		const [trendView, setTrendView] = useState<'chart'|'table'>('chart');
 		const [editIdx, setEditIdx] = useState<number | null>(null);
 		const [editWeight, setEditWeight] = useState('');
+	
+	// Current weight and goal weight edit states
+	const [editCurrentWeightOpen, setEditCurrentWeightOpen] = useState(false);
+	const [editCurrentWeightValue, setEditCurrentWeightValue] = useState('');
+	const [editGoalWeightOpen, setEditGoalWeightOpen] = useState(false);
+	const [editGoalWeightValue, setEditGoalWeightValue] = useState('');
+	
+	// Current weight (latest from trend) and goal weight from store
+	const currentWeight = trend.length > 0 ? trend[trend.length - 1].weight : 87;
+	const goalWeight = gym.goalWeight ?? 79;
 		const [editDate, setEditDate] = useState('');
 	const submitWeight = () => {
 		const w = parseFloat(newWeight);
@@ -219,28 +230,34 @@ export default function Gym() {
 					</Card>
 
 					{/* Card 3: Current Weight */}
-					<Card className="relative overflow-hidden">
+					<Card className="relative overflow-hidden cursor-pointer hover:ring-2 hover:ring-purple-500/50 transition-all" onClick={() => { setEditCurrentWeightValue(String(currentWeight)); setEditCurrentWeightOpen(true); }}>
 						<div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-5" />
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 							<CardTitle className="text-sm font-medium">Current Weight</CardTitle>
-							<Flame className="h-4 w-4 text-purple-600" />
+							<div className="flex items-center gap-1">
+								<Edit2 className="h-3 w-3 text-purple-400" />
+								<Flame className="h-4 w-4 text-purple-600" />
+							</div>
 						</CardHeader>
 						<CardContent>
-							<div className="text-2xl font-bold">87 kg</div>
-							<p className="text-xs text-muted-foreground">as of today</p>
+							<div className="text-2xl font-bold">{currentWeight} kg</div>
+							<p className="text-xs text-muted-foreground">click to edit</p>
 						</CardContent>
 					</Card>
 
 					{/* Card 4: Goal Weight */}
-					<Card className="relative overflow-hidden">
+					<Card className="relative overflow-hidden cursor-pointer hover:ring-2 hover:ring-pink-500/50 transition-all" onClick={() => { setEditGoalWeightValue(String(goalWeight)); setEditGoalWeightOpen(true); }}>
 						<div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-red-500 opacity-5" />
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 							<CardTitle className="text-sm font-medium">Goal Weight</CardTitle>
-							<Target className="h-4 w-4 text-pink-600" />
+							<div className="flex items-center gap-1">
+								<Edit2 className="h-3 w-3 text-pink-400" />
+								<Target className="h-4 w-4 text-pink-600" />
+							</div>
 						</CardHeader>
 						<CardContent>
-							<div className="text-2xl font-bold">79 kg</div>
-							<p className="text-xs text-muted-foreground">target</p>
+							<div className="text-2xl font-bold">{goalWeight} kg</div>
+							<p className="text-xs text-muted-foreground">click to edit</p>
 						</CardContent>
 					</Card>
 				</div>
@@ -689,6 +706,74 @@ export default function Gym() {
 							<DialogFooter>
 								<Button onClick={commitEdit}>Save</Button>
 								<Button variant="outline" onClick={()=>setEditIdx(null)}>Cancel</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
+
+					{/* Edit Current Weight Dialog */}
+					<Dialog open={editCurrentWeightOpen} onOpenChange={setEditCurrentWeightOpen}>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Edit Current Weight</DialogTitle>
+							</DialogHeader>
+							<div className="space-y-4">
+								<div>
+									<label className="text-sm font-medium">Weight (kg)</label>
+									<Input 
+										type="number" 
+										step="0.1" 
+										value={editCurrentWeightValue} 
+										onChange={(e) => setEditCurrentWeightValue(e.target.value)} 
+										placeholder="e.g., 85.5"
+									/>
+								</div>
+								<p className="text-xs text-muted-foreground">
+									This will add a new entry to your weight trend.
+								</p>
+							</div>
+							<DialogFooter>
+								<Button onClick={() => {
+									const w = parseFloat(editCurrentWeightValue);
+									if (Number.isFinite(w) && w > 0) {
+										addGymWeight(w);
+										setEditCurrentWeightOpen(false);
+									}
+								}}>Save</Button>
+								<Button variant="outline" onClick={() => setEditCurrentWeightOpen(false)}>Cancel</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
+
+					{/* Edit Goal Weight Dialog */}
+					<Dialog open={editGoalWeightOpen} onOpenChange={setEditGoalWeightOpen}>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Edit Goal Weight</DialogTitle>
+							</DialogHeader>
+							<div className="space-y-4">
+								<div>
+									<label className="text-sm font-medium">Goal Weight (kg)</label>
+									<Input 
+										type="number" 
+										step="0.1" 
+										value={editGoalWeightValue} 
+										onChange={(e) => setEditGoalWeightValue(e.target.value)} 
+										placeholder="e.g., 75"
+									/>
+								</div>
+								<p className="text-xs text-muted-foreground">
+									Set your target weight goal.
+								</p>
+							</div>
+							<DialogFooter>
+								<Button onClick={() => {
+									const w = parseFloat(editGoalWeightValue);
+									if (Number.isFinite(w) && w > 0) {
+										setGymGoalWeight(w);
+										setEditGoalWeightOpen(false);
+									}
+								}}>Save</Button>
+								<Button variant="outline" onClick={() => setEditGoalWeightOpen(false)}>Cancel</Button>
 							</DialogFooter>
 						</DialogContent>
 					</Dialog>

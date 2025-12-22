@@ -23,6 +23,8 @@ interface ActivityData {
   powerLiftWeights?: number[]; // e.g., [100, 50, 50, 50]
   // User body weight tracking (for trend chart)
   weightTrend?: Array<{ date: string; weight: number; ts?: number }>; // chronological order; ts=epoch ms
+  // Goal weight for gym
+  goalWeight?: number;
   // Boxing-specific optional fields
   totalFights?: number;
   wins?: number;
@@ -87,6 +89,7 @@ interface ActivityStore {
   addGymWeight: (weight: number, dateLabel?: string) => void;
   updateGymWeightAt: (index: number, weight?: number, dateLabel?: string) => void;
   deleteGymWeightAt: (index: number) => void;
+  setGymGoalWeight: (weight: number) => void;
   // Daily activities
   dailyActivityNames: string[];
   updateDailyActivityName: (index: number, name: string) => void;
@@ -750,6 +753,16 @@ export const useActivityStore = create<ActivityStore>()(
           const next = trend.filter((_, i) => i !== index);
           return { ...state, gym: { ...state.gym, weightTrend: next } };
         });
+      },
+
+      setGymGoalWeight: (weight) => {
+        set((state) => ({
+          ...state,
+          gym: {
+            ...state.gym,
+            goalWeight: Math.round(weight * 100) / 100,
+          },
+        }));
       },
 
       updateDailyActivityName: (index, name) => {
