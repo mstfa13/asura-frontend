@@ -87,6 +87,8 @@ interface ActivityStore {
   // Gym
   updateGymPowerLiftName: (index: number, name: string) => void;
   updateGymPowerLiftWeight: (index: number, weight: number) => void;
+  addGymPowerLift: (name: string, weight?: number) => void;
+  removeGymPowerLift: (index: number) => void;
   addGymWeight: (weight: number, dateLabel?: string) => void;
   updateGymWeightAt: (index: number, weight?: number, dateLabel?: string) => void;
   deleteGymWeightAt: (index: number) => void;
@@ -105,6 +107,7 @@ interface ActivityStore {
   // Gym Exercise categories and CRUD
   gymExerciseCategories: Record<string, 'push' | 'pull' | 'legs' | 'other'>;
   addGymExercise: (name: string, category: 'push' | 'pull' | 'legs' | 'other') => string;
+  removeGymExercise: (id: string) => void;
   // Optional: update category later
   updateGymExerciseCategory?: (id: string, category: 'push' | 'pull' | 'legs' | 'other') => void;
   // Gym Exercise progress (weights timeline)
@@ -676,9 +679,10 @@ export const useActivityStore = create<ActivityStore>()(
       },
 
       updateGymPowerLiftName: (index, name) => {
-        if (index < 0 || index > 3) return;
+        if (index < 0 || index > 5) return; // Support up to 6 lifts
         set((state) => {
           const names = state.gym.powerLiftNames ?? ['Squats','Bench Press','Rows / Lat Pulldowns','Hip Thrusts'];
+          if (index >= names.length) return state;
           const next = [...names];
           next[index] = name.trim() || names[index];
           return {
@@ -692,7 +696,7 @@ export const useActivityStore = create<ActivityStore>()(
       },
 
       updateGymPowerLiftWeight: (index, weight) => {
-        if (index < 0 || index > 3) return;
+        if (index < 0 || index > 5) return; // Support up to 6 lifts
         set((state) => {
           const current = state.gym.powerLiftWeights ?? [100, 50, 50, 50];
           const next = [...current];
@@ -703,6 +707,41 @@ export const useActivityStore = create<ActivityStore>()(
             gym: {
               ...state.gym,
               powerLiftWeights: next,
+            },
+          };
+        });
+      },
+
+      addGymPowerLift: (name, weight = 0) => {
+        set((state) => {
+          const names = state.gym.powerLiftNames ?? ['Squats','Bench Press','Rows / Lat Pulldowns','Hip Thrusts'];
+          const weights = state.gym.powerLiftWeights ?? [100, 50, 50, 50];
+          if (names.length >= 6) return state; // Max 6 lifts
+          return {
+            ...state,
+            gym: {
+              ...state.gym,
+              powerLiftNames: [...names, name.trim() || 'New Lift'],
+              powerLiftWeights: [...weights, weight],
+            },
+          };
+        });
+      },
+
+      removeGymPowerLift: (index) => {
+        set((state) => {
+          const names = state.gym.powerLiftNames ?? ['Squats','Bench Press','Rows / Lat Pulldowns','Hip Thrusts'];
+          const weights = state.gym.powerLiftWeights ?? [100, 50, 50, 50];
+          if (names.length <= 3) return state; // Min 3 lifts
+          if (index < 0 || index >= names.length) return state;
+          const nextNames = names.filter((_, i) => i !== index);
+          const nextWeights = weights.filter((_, i) => i !== index);
+          return {
+            ...state,
+            gym: {
+              ...state.gym,
+              powerLiftNames: nextNames,
+              powerLiftWeights: nextWeights,
             },
           };
         });
@@ -839,6 +878,21 @@ export const useActivityStore = create<ActivityStore>()(
           // progress series starts empty; add key when first weight is added
         }));
         return id;
+      },
+
+      removeGymExercise: (id) => {
+        if (!id) return;
+        set((state) => {
+          const { [id]: _name, ...restNames } = state.gymExerciseNames;
+          const { [id]: _cat, ...restCats } = state.gymExerciseCategories;
+          const { [id]: _progress, ...restProgress } = state.gymExerciseProgress ?? {};
+          return {
+            ...state,
+            gymExerciseNames: restNames,
+            gymExerciseCategories: restCats,
+            gymExerciseProgress: restProgress,
+          };
+        });
       },
 
       addGymExerciseWeight: (id, weight, reps, dateLabel) => {
@@ -1048,59 +1102,62 @@ export const useActivityStore = create<ActivityStore>()(
           const cats = ['Learning','Learning','Music','Health','Health'];
           state.dailyActivityList = (state.dailyActivityNames as string[]).map((n, i) => ({ id: String(i+1), name: n, category: cats[i] || 'General' }));
         }
-        // Initialize gym exercises if empty (unified system)
+        // Initialize gym exercises (unified system)
         state.gymExerciseNames = state.gymExerciseNames ?? {};
         state.gymExerciseCategories = state.gymExerciseCategories ?? {};
         state.gymExerciseProgress = state.gymExerciseProgress ?? {};
         
-        // Add default exercises if none exist
-        if (Object.keys(state.gymExerciseNames).length === 0) {
-          // Push exercises
-          const pushExercises = [
-            ['flat-db-press', 'Flat DB Press'],
-            ['flat-bpress-machine', 'Flat B-Press Machine'],
-            ['incline-db-press', 'Incline DB Press'],
-            ['incline-bpress-machine', 'Incline B-Press Machine'],
-            ['high-low-cable-fly', 'High to Low Cable Fly'],
-            ['tri-rope-pushdown', 'Tri Rope Pushdown'],
-            ['overhead-cable-bar-extensions', 'Overhead Cable Bar Extensions'],
-            ['db-lateral-raises', 'DB Lateral Raises'],
-            ['cable-lateral-raises', 'Cable Lateral Raises'],
-            ['shoulder-press-machine', 'Shoulder Press Machine'],
-          ];
-          // Pull exercises
-          const pullExercises = [
-            ['wide-lat-pulldown', 'Wide Lat Pulldown'],
-            ['narrow-seated-rows', 'Narrow Seated Rows'],
-            ['wide-seated-rows', 'Wide Seated Rows'],
-            ['rope-face-pulls', 'Rope Face Pulls'],
-            ['sa-cable-rear-delt-fly', 'SA Cable Rear Delt Fly'],
-            ['bar-curls', 'Bar Curls'],
-            ['db-preacher-curl', 'DB Preacher Curl'],
-            ['behind-back-cable-curls', 'Behind Back Cable Curls'],
-            ['rope-bicep-curl', 'Rope Bicep Curl'],
-            ['cable-bar-shrugs', 'Cable Bar Shrugs'],
-          ];
-          // Leg exercises
-          const legExercises = [
-            ['romanian-deadlift', 'Romanian Deadlift'],
-            ['bar-squat', 'Bar Squat'],
-            ['hack-squat', 'Hack Squat'],
-            ['single-leg-press', 'Single Leg Press'],
-            ['leg-extensions', 'Leg Extensions'],
-            ['seated-leg-curls', 'Seated Leg Curls'],
-            ['bar-hip-thrust', 'Bar Hip Thrust'],
-            ['seated-adduction-machine', 'Seated Adduction Machine'],
-          ];
-          
-          // Add all exercises with categories
-          [...pushExercises.map(e => [...e, 'push']), 
-           ...pullExercises.map(e => [...e, 'pull']), 
-           ...legExercises.map(e => [...e, 'legs'])].forEach(([id, name, cat]) => {
+        // Define default exercises (always merge to ensure they exist)
+        // Push exercises
+        const pushExercises = [
+          ['flat-db-press', 'Flat DB Press'],
+          ['flat-bpress-machine', 'Flat B-Press Machine'],
+          ['incline-db-press', 'Incline DB Press'],
+          ['incline-bpress-machine', 'Incline B-Press Machine'],
+          ['high-low-cable-fly', 'High to Low Cable Fly'],
+          ['tri-rope-pushdown', 'Tri Rope Pushdown'],
+          ['overhead-cable-bar-extensions', 'Overhead Cable Bar Extensions'],
+          ['db-lateral-raises', 'DB Lateral Raises'],
+          ['cable-lateral-raises', 'Cable Lateral Raises'],
+          ['shoulder-press-machine', 'Shoulder Press Machine'],
+        ];
+        // Pull exercises
+        const pullExercises = [
+          ['wide-lat-pulldown', 'Wide Lat Pulldown'],
+          ['narrow-seated-rows', 'Narrow Seated Rows'],
+          ['wide-seated-rows', 'Wide Seated Rows'],
+          ['rope-face-pulls', 'Rope Face Pulls'],
+          ['sa-cable-rear-delt-fly', 'SA Cable Rear Delt Fly'],
+          ['bar-curls', 'Bar Curls'],
+          ['db-preacher-curl', 'DB Preacher Curl'],
+          ['behind-back-cable-curls', 'Behind Back Cable Curls'],
+          ['rope-bicep-curl', 'Rope Bicep Curl'],
+          ['cable-bar-shrugs', 'Cable Bar Shrugs'],
+        ];
+        // Leg exercises
+        const legExercises = [
+          ['romanian-deadlift', 'Romanian Deadlift'],
+          ['bar-squat', 'Bar Squat'],
+          ['hack-squat', 'Hack Squat'],
+          ['single-leg-press', 'Single Leg Press'],
+          ['leg-extensions', 'Leg Extensions'],
+          ['seated-leg-curls', 'Seated Leg Curls'],
+          ['bar-hip-thrust', 'Bar Hip Thrust'],
+          ['seated-adduction-machine', 'Seated Adduction Machine'],
+        ];
+        
+        // Merge default exercises (only add if not already present)
+        [...pushExercises.map(e => [...e, 'push']), 
+         ...pullExercises.map(e => [...e, 'pull']), 
+         ...legExercises.map(e => [...e, 'legs'])].forEach(([id, name, cat]) => {
+          if (!state.gymExerciseNames[id]) {
             state.gymExerciseNames[id] = name;
             state.gymExerciseCategories[id] = cat;
-          });
-          
+          }
+        });
+        
+        // Add sample session data only if exercises have no progress data
+        if (Object.keys(state.gymExerciseProgress).length === 0) {
           // Add session data from your workout
           const sessionData = [
             ['flat-db-press', 25, 8],
@@ -1137,7 +1194,7 @@ export const useActivityStore = create<ActivityStore>()(
             }
           });
         }
-  state.hiddenActivities = state.hiddenActivities ?? {};
+        state.hiddenActivities = state.hiddenActivities ?? {};
         if (state.oud) {
           if (typeof state.oud.totalHours === 'number' && state.oud.totalHours < 16) {
             state.oud.totalHours = 16;

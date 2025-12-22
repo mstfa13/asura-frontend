@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActivityStore } from '@/lib/activityStore';
-import { Dumbbell, Clock, Target, Flame, Edit2 } from 'lucide-react';
+import { Dumbbell, Clock, Target, Flame, Edit2, Plus, X, Trash2 } from 'lucide-react';
 import Levels from '@/components/Levels';
 import { LineChart } from '@mui/x-charts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -18,6 +18,9 @@ export default function Gym() {
 	const [manualTotal, setManualTotal] = useState('');
 	const updateLiftName = useActivityStore((s) => s.updateGymPowerLiftName);
 	const updateLiftWeight = useActivityStore((s) => s.updateGymPowerLiftWeight);
+	const addPowerLift = useActivityStore((s) => s.addGymPowerLift);
+	const removePowerLift = useActivityStore((s) => s.removeGymPowerLift);
+	const removeGymExercise = useActivityStore((s) => s.removeGymExercise);
 	const [editingIndex, setEditingIndex] = useState<number | null>(null);
 	const [tempName, setTempName] = useState('');
 	const [editingWeightIndex, setEditingWeightIndex] = useState<number | null>(null);
@@ -210,16 +213,16 @@ export default function Gym() {
 						</CardContent>
 					</Card>
 
-					{/* Card 2: This Week Sessions */}
+					{/* Card 2: Current Level */}
 					<Card className="relative overflow-hidden">
 						<div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 opacity-5" />
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">This Week</CardTitle>
-							<Clock className="h-4 w-4 text-blue-600" />
+							<CardTitle className="text-sm font-medium">Current Level</CardTitle>
+							<Target className="h-4 w-4 text-blue-600" />
 						</CardHeader>
 						<CardContent>
-							<div className="text-2xl font-bold">{gym.thisWeekSessions}</div>
-							<p className="text-xs text-muted-foreground">sessions completed</p>
+							<div className="text-2xl font-bold">Level {gymLevel}</div>
+							<p className="text-xs text-muted-foreground">based on power lifts</p>
 						</CardContent>
 					</Card>
 
@@ -267,16 +270,20 @@ export default function Gym() {
 							{(() => {
 								const defaultNames = ['Squats','Bench Press','Rows / Lat Pulldowns','Hip Thrusts'];
 								const names = gym.powerLiftNames ?? defaultNames;
-								const lifts = names.map((n, i) => ({ name: n || defaultNames[i], i }));
+								const lifts = names.map((n, i) => ({ name: n || defaultNames[i] || 'New Lift', i }));
 								const weights = gym.powerLiftWeights ?? [100, 50, 50, 50];
+								const canRemove = names.length > 3;
+								const canAdd = names.length < 6;
 								const gradients = [
 									'from-red-500/25 to-orange-500/25',
 									'from-blue-500/25 to-cyan-500/25',
 									'from-emerald-500/25 to-teal-500/25',
 									'from-fuchsia-500/25 to-pink-500/25',
+									'from-amber-500/25 to-yellow-500/25',
+									'from-violet-500/25 to-purple-500/25',
 								];
-								const textColors = ['text-red-700','text-blue-700','text-emerald-700','text-fuchsia-700'];
-								const badgeColors = ['bg-red-100 text-red-700','bg-blue-100 text-blue-700','bg-emerald-100 text-emerald-700','bg-fuchsia-100 text-fuchsia-700'];
+								const textColors = ['text-red-700 dark:text-red-400','text-blue-700 dark:text-blue-400','text-emerald-700 dark:text-emerald-400','text-fuchsia-700 dark:text-fuchsia-400','text-amber-700 dark:text-amber-400','text-violet-700 dark:text-violet-400'];
+								const badgeColors = ['bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300','bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300','bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300','bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/50 dark:text-fuchsia-300','bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300','bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-300'];
 
 								const commitEdit = () => {
 									if (editingIndex === null) return;
@@ -302,8 +309,19 @@ export default function Gym() {
 								return (
 									<div className="space-y-3">
 										{lifts.map((l, idx) => (
-											<div key={idx} className={`rounded-md border bg-gradient-to-r ${gradients[idx]}`}>
+											<div key={idx} className={`rounded-md border bg-gradient-to-r ${gradients[idx % gradients.length]}`}>
 												<div className="flex items-center justify-between p-3 gap-2">
+													{canRemove && (
+														<Button
+															variant="ghost"
+															size="sm"
+															className="h-7 w-7 p-0 text-gray-400 hover:text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30"
+															title="Remove lift"
+															onClick={() => removePowerLift(idx)}
+														>
+															<X className="h-4 w-4" />
+														</Button>
+													)}
 													<div className="flex-1 min-w-0">
 														{editingIndex === idx ? (
 															<Input
@@ -319,7 +337,7 @@ export default function Gym() {
 															/>
 														) : (
 															<div
-																		className={`font-medium ${textColors[idx]} truncate cursor-text select-none`}
+																		className={`font-medium ${textColors[idx % textColors.length]} truncate cursor-text select-none`}
 																title="Double-click to rename"
 																onDoubleClick={() => { setEditingIndex(idx); setTempName(l.name); }}
 															>
@@ -327,7 +345,7 @@ export default function Gym() {
 															</div>
 														)}
 													</div>
-													<div className={`text-xs px-2 py-1 rounded ${badgeColors[idx]} flex items-center gap-2 min-w-[88px] justify-end`}>
+													<div className={`text-xs px-2 py-1 rounded ${badgeColors[idx % badgeColors.length]} flex items-center gap-2 min-w-[88px] justify-end`}>
 														{editingWeightIndex === idx ? (
 															<Input
 																autoFocus
@@ -348,13 +366,24 @@ export default function Gym() {
 																title="Double-click to edit weight"
 																onDoubleClick={() => { setEditingWeightIndex(idx); setTempWeight(String(weights[idx] ?? '')); }}
 															>
-																{weights[idx]} kg
+																{weights[idx] ?? 0} kg
 															</div>
 														)}
 													</div>
 												</div>
 											</div>
 										))}
+										{canAdd && (
+											<Button
+												variant="outline"
+												size="sm"
+												className="w-full mt-2"
+												onClick={() => addPowerLift('New Lift', 0)}
+											>
+												<Plus className="h-4 w-4 mr-2" />
+												Add Power Lift
+											</Button>
+										)}
 									</div>
 								);
 							})()}
@@ -491,6 +520,7 @@ export default function Gym() {
 								</div>
 
 								{/* Exercise selector */}
+																<div className="flex items-center gap-2">
 																<div className="w-56">
 								<label className="sr-only" htmlFor="exercise-select">Exercise</label>
 								<Select value={selectedExercise} onValueChange={setSelectedExercise}>
@@ -503,6 +533,23 @@ export default function Gym() {
 										))}
 									</SelectContent>
 																</Select>
+																</div>
+																{selectedExercise && (
+																	<Button
+																		variant="ghost"
+																		size="sm"
+																		className="h-9 w-9 p-0 text-gray-400 hover:text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30"
+																		title="Delete this exercise"
+																		onClick={() => {
+																			if (confirm('Delete this exercise and all its data?')) {
+																				removeGymExercise(selectedExercise);
+																				setSelectedExercise('');
+																			}
+																		}}
+																	>
+																		<Trash2 className="h-4 w-4" />
+																	</Button>
+																)}
 																</div>
 																{/* Category filter */}
 																<div className="w-40">

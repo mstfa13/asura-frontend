@@ -121,12 +121,12 @@ export default function Oud() {
 					<Card className="relative overflow-hidden">
 						<div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-rose-500 opacity-5" />
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">This Week</CardTitle>
-							<Clock className="h-4 w-4 text-pink-600" />
+							<CardTitle className="text-sm font-medium">Current Level</CardTitle>
+							<Target className="h-4 w-4 text-pink-600" />
 						</CardHeader>
 						<CardContent>
-							<div className="text-2xl font-bold">{oud.thisWeekSessions}</div>
-							<p className="text-xs text-muted-foreground">sessions completed</p>
+							<div className="text-2xl font-bold">Level {oudLevel}</div>
+							<p className="text-xs text-muted-foreground">based on total hours</p>
 						</CardContent>
 					</Card>
 

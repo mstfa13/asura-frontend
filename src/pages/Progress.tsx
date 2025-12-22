@@ -132,19 +132,19 @@ export default function Progress() {
                   const coreActivity = coreActivities.find(c => c.name === activity.name);
                   const isCore = !!coreActivity;
                   
-                  // Get styling based on activity type - dark mode compatible
+                  // Get styling based on activity type - light/dark mode compatible
                   const getActivityStyle = (name: string, isCore: boolean) => {
                     if (isCore) {
                       switch (name) {
-                        case 'Boxing': return { bg: 'bg-red-500/40', text: 'text-red-200', boldText: 'text-red-300', badge: 'bg-red-500/50 text-red-100' };
-                        case 'Gym': return { bg: 'bg-green-500/40', text: 'text-green-200', boldText: 'text-green-300', badge: 'bg-green-500/50 text-green-100' };
-                        case 'Oud': return { bg: 'bg-purple-500/40', text: 'text-purple-200', boldText: 'text-purple-300', badge: 'bg-purple-500/50 text-purple-100' };
-                        case 'Spanish': return { bg: 'bg-yellow-500/40', text: 'text-yellow-200', boldText: 'text-yellow-300', badge: 'bg-yellow-500/50 text-yellow-100' };
-                        case 'German': return { bg: 'bg-slate-500/40', text: 'text-slate-200', boldText: 'text-slate-300', badge: 'bg-slate-500/50 text-slate-100' };
-                        default: return { bg: 'bg-indigo-500/40', text: 'text-indigo-200', boldText: 'text-indigo-300', badge: 'bg-indigo-500/50 text-indigo-100' };
+                        case 'Boxing': return { bg: 'bg-red-600 dark:bg-red-500/40', text: 'text-red-100 dark:text-red-200', boldText: 'text-white dark:text-red-100', badge: 'bg-red-800 dark:bg-red-500/50 text-white dark:text-red-100' };
+                        case 'Gym': return { bg: 'bg-green-600 dark:bg-green-500/40', text: 'text-green-100 dark:text-green-200', boldText: 'text-white dark:text-green-100', badge: 'bg-green-800 dark:bg-green-500/50 text-white dark:text-green-100' };
+                        case 'Oud': return { bg: 'bg-purple-600 dark:bg-purple-500/40', text: 'text-purple-100 dark:text-purple-200', boldText: 'text-white dark:text-purple-100', badge: 'bg-purple-800 dark:bg-purple-500/50 text-white dark:text-purple-100' };
+                        case 'Spanish': return { bg: 'bg-amber-500 dark:bg-yellow-500/40', text: 'text-amber-100 dark:text-yellow-200', boldText: 'text-white dark:text-yellow-100', badge: 'bg-amber-700 dark:bg-yellow-500/50 text-white dark:text-yellow-100' };
+                        case 'German': return { bg: 'bg-slate-600 dark:bg-slate-500/40', text: 'text-slate-100 dark:text-slate-200', boldText: 'text-white dark:text-slate-100', badge: 'bg-slate-800 dark:bg-slate-500/50 text-white dark:text-slate-100' };
+                        default: return { bg: 'bg-indigo-600 dark:bg-indigo-500/40', text: 'text-indigo-100 dark:text-indigo-200', boldText: 'text-white dark:text-indigo-100', badge: 'bg-indigo-800 dark:bg-indigo-500/50 text-white dark:text-indigo-100' };
                       }
                     }
-                    return { bg: 'bg-indigo-500/40', text: 'text-indigo-200', boldText: 'text-indigo-300', badge: 'bg-indigo-500/50 text-indigo-100' };
+                    return { bg: 'bg-indigo-600 dark:bg-indigo-500/40', text: 'text-indigo-100 dark:text-indigo-200', boldText: 'text-white dark:text-indigo-100', badge: 'bg-indigo-800 dark:bg-indigo-500/50 text-white dark:text-indigo-100' };
                   };
 
                   const style = getActivityStyle(activity.name, isCore);
@@ -213,23 +213,23 @@ export default function Progress() {
               </CardHeader>
               <CardContent>
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-slate-200">
+                  <div className="text-4xl font-bold text-blue-600 dark:text-slate-200">
                     {allActivities.reduce((total, activity) => total + activity.hours, 0)}h
                   </div>
-                  <p className="text-slate-400 mt-2">Total hours across all activities</p>
+                  <p className="text-gray-600 dark:text-slate-400 mt-2">Total hours across all activities</p>
                   
                   <div className="mt-6 space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-400">Most Active</span>
-                      <span className="font-medium text-slate-200">
+                      <span className="text-gray-600 dark:text-slate-400">Most Active</span>
+                      <span className="font-medium text-gray-900 dark:text-slate-200">
                         {allActivities.length > 0 
                           ? allActivities.reduce((a, b) => (b.hours > a.hours ? b : a)).name
                           : 'None'}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-400">Average per Activity</span>
-                      <span className="font-medium text-slate-200">
+                      <span className="text-gray-600 dark:text-slate-400">Average per Activity</span>
+                      <span className="font-medium text-gray-900 dark:text-slate-200">
                         {allActivities.length > 0 
                           ? Math.round(allActivities.reduce((total, activity) => total + activity.hours, 0) / allActivities.length)
                           : 0}h
