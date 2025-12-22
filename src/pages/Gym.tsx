@@ -771,6 +771,37 @@ export default function Gym() {
 							</DialogFooter>
 						</DialogContent>
 					</Dialog>
+
+					{/* Edit Total Hours Dialog */}
+					<Dialog open={editTotalOpen} onOpenChange={setEditTotalOpen}>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Edit Total Hours</DialogTitle>
+							</DialogHeader>
+							<div className="space-y-4">
+								<div>
+									<label className="text-sm font-medium">Total Hours</label>
+									<Input 
+										type="number" 
+										step="0.5" 
+										value={manualTotal} 
+										onChange={(e) => setManualTotal(e.target.value)} 
+										placeholder="Enter total hours"
+									/>
+								</div>
+							</div>
+							<DialogFooter>
+								<Button onClick={() => {
+									const hours = parseFloat(manualTotal);
+									if (Number.isFinite(hours) && hours >= 0) {
+										setActivityTotalHours('gym', hours);
+										setEditTotalOpen(false);
+									}
+								}}>Save</Button>
+								<Button variant="outline" onClick={() => setEditTotalOpen(false)}>Cancel</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
 		</div>
 	);
 }
