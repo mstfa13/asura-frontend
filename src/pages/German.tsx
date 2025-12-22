@@ -98,28 +98,18 @@ export default function German() {
         
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="relative overflow-hidden">
+          <Card className="relative overflow-hidden cursor-pointer hover:ring-2 hover:ring-slate-500/50 transition-all" onClick={() => { setManualTotal(german.totalHours.toString()); setEditTotalOpen(true); }}>
             <div className="absolute inset-0 bg-gradient-to-r from-slate-600 to-gray-900 opacity-5" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Hours</CardTitle>
               <div className="flex items-center gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => {
-                    setManualTotal(german.totalHours.toString());
-                    setEditTotalOpen(true);
-                  }}
-                  className="h-6 w-6 p-0"
-                >
-                  <Edit2 className="h-3 w-3" />
-                </Button>
+                <Edit2 className="h-3 w-3 text-slate-400" />
                 <Languages className="h-4 w-4 text-slate-700" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{german.totalHours}h</div>
-              <p className="text-xs text-muted-foreground">lifetime practice</p>
+              <p className="text-xs text-muted-foreground">click to edit</p>
             </CardContent>
           </Card>
 

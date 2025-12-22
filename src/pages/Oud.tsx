@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActivityStore } from '@/lib/activityStore';
-import { Music2, Clock, Plus, Target, Flame } from 'lucide-react';
+import { Music2, Clock, Plus, Target, Flame, Edit2 } from 'lucide-react';
 import Levels from '@/components/Levels';
 import { DailyGoalGauge } from '@/components/DailyGoalGauge';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -11,12 +11,17 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 export default function Oud() {
 	const [showAddHours, setShowAddHours] = useState(false);
 	const [hoursToAdd, setHoursToAdd] = useState('');
-	const { oud, addHours } = useActivityStore();
+	const { oud, addHours, addConcert } = useActivityStore();
 	const setActivityTotalHours = useActivityStore((s) => s.setActivityTotalHours);
+	const setTotalConcerts = useActivityStore((s) => s.setTotalConcerts);
 	const setDailyGoal = useActivityStore((s) => s.setDailyGoal);
 	const addTodayMinutes = useActivityStore((s) => s.addTodayMinutes);
 	const [editTotalOpen, setEditTotalOpen] = useState(false);
 	const [manualTotal, setManualTotal] = useState('');
+	
+	// Edit concerts state
+	const [editConcertsOpen, setEditConcertsOpen] = useState(false);
+	const [manualConcerts, setManualConcerts] = useState('');
 
 	// Derive Oud level dynamically from total hours based on provided thresholds
 	const oudLevel =
@@ -98,24 +103,18 @@ export default function Oud() {
 
 
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-					<Card className="relative overflow-hidden">
+					<Card className="relative overflow-hidden cursor-pointer hover:ring-2 hover:ring-purple-500/50 transition-all" onClick={() => { setManualTotal(String(oud.totalHours)); setEditTotalOpen(true); }}>
 						<div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-5" />
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 							<CardTitle className="text-sm font-medium">Total Hours</CardTitle>
 							<div className="flex items-center gap-2">
+								<Edit2 className="h-3 w-3 text-purple-400" />
 								<Music2 className="h-4 w-4 text-purple-600" />
-								<button
-									className="text-xs text-gray-500 hover:text-gray-700 underline"
-									onClick={() => { setManualTotal(String(oud.totalHours)); setEditTotalOpen(true); }}
-									title="Edit total hours"
-								>
-									Edit
-								</button>
 							</div>
 						</CardHeader>
 						<CardContent>
 							<div className="text-3xl font-bold">{oud.totalHours}h</div>
-							<p className="text-xs text-muted-foreground">lifetime practice</p>
+							<p className="text-xs text-muted-foreground">click to edit</p>
 						</CardContent>
 					</Card>
 
@@ -143,17 +142,20 @@ export default function Oud() {
 						</CardContent>
 					</Card>
 
-								<Card className="relative overflow-hidden">
-									<div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 opacity-5" />
-									<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-										<CardTitle className="text-sm font-medium">Total Concerts</CardTitle>
-										<Target className="h-4 w-4 text-orange-600" />
-									</CardHeader>
-									<CardContent>
-										  <div className="text-2xl font-bold">{oud.totalConcerts ?? 0}</div>
-										  <p className="text-xs text-muted-foreground">performed so far</p>
-									</CardContent>
-								</Card>
+					<Card className="relative overflow-hidden cursor-pointer hover:ring-2 hover:ring-orange-500/50 transition-all" onClick={() => { setManualConcerts(String(oud.totalConcerts ?? 0)); setEditConcertsOpen(true); }}>
+						<div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 opacity-5" />
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+							<CardTitle className="text-sm font-medium">Total Concerts</CardTitle>
+							<div className="flex items-center gap-2">
+								<Edit2 className="h-3 w-3 text-orange-400" />
+								<Target className="h-4 w-4 text-orange-600" />
+							</div>
+						</CardHeader>
+						<CardContent>
+							<div className="text-2xl font-bold">{oud.totalConcerts ?? 0}</div>
+							<p className="text-xs text-muted-foreground">click to edit</p>
+						</CardContent>
+					</Card>
 				</div>
 				{/* Levels and Daily Goal */}
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
@@ -180,7 +182,7 @@ export default function Oud() {
 						<DialogTitle>Edit Total Hours</DialogTitle>
 					</DialogHeader>
 					<div className="space-y-4">
-						<div>
+					<div>
 							<label className="text-sm font-medium">Total Hours</label>
 							<Input
 								type="number"
@@ -202,7 +204,42 @@ export default function Oud() {
 					</div>
 				</DialogContent>
 			</Dialog>
+
+			{/* Edit Total Concerts Dialog */}
+			<Dialog open={editConcertsOpen} onOpenChange={setEditConcertsOpen}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Edit Total Concerts</DialogTitle>
+					</DialogHeader>
+					<div className="space-y-4">
+						<div>
+							<label className="text-sm font-medium">Total Concerts</label>
+							<Input
+								type="number"
+								value={manualConcerts}
+								onChange={(e) => setManualConcerts(e.target.value)}
+								placeholder="Enter total concerts"
+								step="1"
+								min="0"
+							/>
+						</div>
+						<div className="flex gap-2 justify-end">
+							<Button variant="outline" onClick={() => setEditConcertsOpen(false)}>
+								Cancel
+							</Button>
+							<Button onClick={() => {
+								const count = parseInt(manualConcerts);
+								if (Number.isFinite(count) && count >= 0) {
+									setTotalConcerts('oud', count);
+									setEditConcertsOpen(false);
+								}
+							}}>
+								Save
+							</Button>
+						</div>
+					</div>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }
-

@@ -61,6 +61,7 @@ interface ActivityStore {
   getActivityData: (activity: 'boxing' | 'gym' | 'oud' | 'violin' | 'spanish' | 'german') => ActivityData;
   recordBoxingFight: (result: 'win' | 'loss' | 'draw') => void;
   addConcert: () => void;
+  setTotalConcerts: (activity: 'oud' | 'violin', count: number) => void;
   addTapeHours: (kind: 'boxing' | 'kickboxing' | 'mma', hours: number) => void;
   addBoxingTapeEntry: (boxingH: number, kickH: number, mmaH: number, dateLabel?: string) => void;
   updateBoxingTapeAt: (index: number, boxingH?: number, kickH?: number, mmaH?: number, dateLabel?: string) => void;
@@ -317,6 +318,16 @@ export const useActivityStore = create<ActivityStore>()(
             },
           };
         });
+      },
+
+      setTotalConcerts: (activity, count) => {
+        set((state) => ({
+          ...state,
+          [activity]: {
+            ...state[activity],
+            totalConcerts: Math.max(0, Math.round(count)),
+          },
+        }));
       },
 
   addTapeHours: (kind, hours) => {

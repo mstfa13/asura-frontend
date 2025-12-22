@@ -103,28 +103,18 @@ export default function Spanish() {
         
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="relative overflow-hidden">
+          <Card className="relative overflow-hidden cursor-pointer hover:ring-2 hover:ring-yellow-500/50 transition-all" onClick={() => { setManualTotal(spanish.totalHours.toString()); setEditTotalOpen(true); }}>
             <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-red-500 opacity-5" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Hours</CardTitle>
               <div className="flex items-center gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => {
-                    setManualTotal(spanish.totalHours.toString());
-                    setEditTotalOpen(true);
-                  }}
-                  className="h-6 w-6 p-0"
-                >
-                  <Edit2 className="h-3 w-3" />
-                </Button>
+                <Edit2 className="h-3 w-3 text-yellow-400" />
                 <Languages className="h-4 w-4 text-yellow-600" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{spanish.totalHours}h</div>
-              <p className="text-xs text-muted-foreground">lifetime practice</p>
+              <p className="text-xs text-muted-foreground">click to edit</p>
             </CardContent>
           </Card>
 

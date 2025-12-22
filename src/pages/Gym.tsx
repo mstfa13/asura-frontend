@@ -195,24 +195,18 @@ export default function Gym() {
 				{/* 4 Simple Cards */}
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 					{/* Card 1: Total Hours */}
-					<Card className="relative overflow-hidden">
+					<Card className="relative overflow-hidden cursor-pointer hover:ring-2 hover:ring-green-500/50 transition-all" onClick={() => { setManualTotal(String(gym.totalHours)); setEditTotalOpen(true); }}>
 						<div className="absolute inset-0 bg-gradient-to-r from-green-500 to-blue-500 opacity-5" />
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 							<CardTitle className="text-sm font-medium">Total Hours</CardTitle>
 							<div className="flex items-center gap-2">
+								<Edit2 className="h-3 w-3 text-green-400" />
 								<Dumbbell className="h-4 w-4 text-green-600" />
-								<button
-									className="text-xs text-gray-500 hover:text-gray-700 underline"
-									onClick={() => { setManualTotal(String(gym.totalHours)); setEditTotalOpen(true); }}
-									title="Edit total hours"
-								>
-									Edit
-								</button>
 							</div>
 						</CardHeader>
 						<CardContent>
 							<div className="text-3xl font-bold">{gym.totalHours}h</div>
-							<p className="text-xs text-muted-foreground">lifetime training</p>
+							<p className="text-xs text-muted-foreground">click to edit</p>
 						</CardContent>
 					</Card>
 

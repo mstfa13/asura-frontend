@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActivityStore } from '@/lib/activityStore';
-import { Zap, Award, CalendarDays, Plus, Target } from 'lucide-react';
+import { Zap, Award, CalendarDays, Plus, Target, Edit2 } from 'lucide-react';
 import { LineChart, PieChart } from '@mui/x-charts';
 import Levels from '@/components/Levels';
 import { DailyGoalGauge } from '@/components/DailyGoalGauge';
@@ -147,24 +147,18 @@ export default function Boxing() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           
           {/* Card 1: Total Hours */}
-          <Card className="relative overflow-hidden">
+          <Card className="relative overflow-hidden cursor-pointer hover:ring-2 hover:ring-red-500/50 transition-all" onClick={() => { setManualTotal(String(boxing.totalHours)); setEditTotalOpen(true); }}>
             <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 opacity-5" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Hours</CardTitle>
               <div className="flex items-center gap-2">
+                <Edit2 className="h-3 w-3 text-red-400" />
                 <Zap className="h-4 w-4 text-red-600" />
-                <button
-                  className="text-xs text-gray-500 hover:text-gray-700 underline"
-                  onClick={() => { setManualTotal(String(boxing.totalHours)); setEditTotalOpen(true); }}
-                  title="Edit total hours"
-                >
-                  Edit
-                </button>
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{Math.floor(boxing.totalHours)}h</div>
-              <p className="text-xs text-muted-foreground">lifetime training</p>
+              <p className="text-xs text-muted-foreground">click to edit</p>
             </CardContent>
           </Card>
 
